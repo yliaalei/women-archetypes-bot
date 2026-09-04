@@ -1,1 +1,569 @@
-
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Тест женских архетипов</title>
+ 
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+ 
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f8f3f5;
+      color: #3d3036;
+    }
+ 
+    .container {
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 30px 18px 50px;
+    }
+ 
+    .card {
+      background: white;
+      border-radius: 24px;
+      padding: 30px 24px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+    }
+ 
+    h1 {
+      text-align: center;
+      font-size: 32px;
+      margin-bottom: 12px;
+    }
+ 
+    h2 {
+      font-size: 24px;
+      line-height: 1.3;
+    }
+ 
+    p {
+      line-height: 1.6;
+    }
+ 
+    .subtitle {
+      text-align: center;
+      font-size: 18px;
+      color: #76666e;
+      margin-bottom: 30px;
+    }
+ 
+    button {
+      width: 100%;
+      border: none;
+      border-radius: 14px;
+      padding: 16px;
+      font-size: 17px;
+      cursor: pointer;
+      background: #8e536f;
+      color: white;
+      margin-top: 10px;
+    }
+ 
+    button:hover {
+      opacity: 0.9;
+    }
+ 
+    .answer {
+      background: #f5eef2;
+      color: #3d3036;
+      text-align: left;
+      margin-top: 12px;
+    }
+ 
+    .answer:hover {
+      background: #eadde4;
+    }
+ 
+    .progress {
+      text-align: center;
+      color: #8e536f;
+      font-size: 14px;
+      margin-bottom: 15px;
+    }
+ 
+    .score {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px 15px;
+      margin: 8px 0;
+      border-radius: 12px;
+      background: #f6f0f3;
+    }
+ 
+    .leading {
+      background: #ead7e1;
+      font-weight: bold;
+    }
+ 
+    .sleeping {
+      background: #f1e9ed;
+    }
+ 
+    .hidden {
+      display: none;
+    }
+ 
+    .result-title {
+      text-align: center;
+      font-size: 28px;
+      margin-bottom: 15px;
+    }
+ 
+    .emoji {
+      font-size: 52px;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+ 
+    .advice {
+      background: #faf5f7;
+      padding: 18px;
+      border-radius: 16px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+ 
+<body>
+ 
+<div class="container">
+ 
+  <div class="card" id="startScreen">
+    <div class="emoji">✨</div>
+ 
+    <h1>Тест женских архетипов</h1>
+ 
+    <p class="subtitle">
+      Узнай себя глубже и раскрой свою силу
+    </p>
+ 
+    <p>
+      Ответь на 15 вопросов и узнай, какие женские энергии
+      сейчас проявлены в тебе сильнее всего.
+    </p>
+ 
+    <button onclick="startTest()">Начать тест</button>
+  </div>
+ 
+  <div class="card hidden" id="testScreen">
+ 
+    <div class="progress" id="progress"></div>
+ 
+    <h2 id="question"></h2>
+ 
+    <div id="answers"></div>
+ 
+  </div>
+ 
+  <div class="card hidden" id="resultScreen">
+ 
+    <div class="emoji" id="resultEmoji"></div>
+ 
+    <div class="result-title" id="resultTitle"></div>
+ 
+    <p id="resultDescription"></p>
+ 
+    <h2>Твои результаты</h2>
+ 
+    <div id="scores"></div>
+ 
+    <div class="advice">
+      <h2>🌙 Спящий архетип</h2>
+      <h3 id="sleepingTitle"></h3>
+      <p id="sleepingDescription"></p>
+    </div>
+ 
+    <button onclick="restartTest()">Пройти тест ещё раз</button>
+ 
+  </div>
+ 
+</div>
+ 
+<script>
+ 
+const archetypes = {
+  A: {
+    name: "Девочка",
+    emoji: "🌸",
+    description:
+      "Девочка — это энергия лёгкости, игры, любопытства, удовольствия и способности радоваться жизни.",
+    advice:
+      "Разрешай себе больше игры и спонтанности. Делай что-то просто потому, что тебе приятно. Возвращай в жизнь творчество, лёгкость и маленькие радости."
+  },
+ 
+  B: {
+    name: "Муза",
+    emoji: "✨",
+    description:
+      "Муза — это вдохновение, красота, чувственность, творчество и способность наполнять пространство своей энергией.",
+    advice:
+      "Создавай красоту вокруг себя. Танцуй, рисуй, фотографируй, занимайся творчеством. Позволяй себе вдохновляться и вдохновлять других."
+  },
+ 
+  C: {
+    name: "Королева",
+    emoji: "👑",
+    description:
+      "Королева — это внутреннее достоинство, самоценность, зрелость, границы и способность занимать своё место.",
+    advice:
+      "Учись выбирать себя без чувства вины. Говори о своих желаниях прямо, устанавливай границы и принимай решения из позиции внутренней опоры."
+  },
+ 
+  D: {
+    name: "Амазонка",
+    emoji: "🔥",
+    description:
+      "Амазонка — это сила, самостоятельность, действие, смелость и способность защищать свои интересы.",
+    advice:
+      "Тренируй решительность. Ставь конкретные цели, действуй и не бойся занимать пространство. Сила становится ресурсом, когда ты направляешь её осознанно."
+  },
+ 
+  E: {
+    name: "Ведьма",
+    emoji: "🔮",
+    description:
+      "Ведьма — это интуиция, глубина, мудрость, чувствительность и контакт со своим внутренним миром.",
+    advice:
+      "Замедляйся и прислушивайся к себе. Веди дневник, проводи время в тишине, замечай свои ощущения и доверяй внутреннему голосу."
+  },
+ 
+  F: {
+    name: "Мать",
+    emoji: "🌿",
+    description:
+      "Мать — это забота, принятие, тепло, поддержка, способность создавать пространство безопасности и любви.",
+    advice:
+      "Учись заботиться не только о других, но и о себе. Спрашивай себя: «Что мне сейчас нужно?» и разрешай себе принимать помощь."
+  }
+};
+ 
+const questions = [
+ 
+  {
+    text: "Когда у тебя появляется свободный день, тебе хочется...",
+    answers: [
+      ["A", "Отдыхать, гулять и делать то, что хочется"],
+      ["B", "Заняться чем-то красивым и творческим"],
+      ["C", "Навести порядок в делах и посвятить время себе"],
+      ["D", "Решить несколько важных задач"],
+      ["E", "Побыть в тишине и подумать"],
+      ["F", "Провести время с близкими"]
+    ]
+  },
+ 
+  {
+    text: "Что для тебя особенно важно в отношениях?",
+    answers: [
+      ["A", "Лёгкость и веселье"],
+      ["B", "Романтика и вдохновение"],
+      ["C", "Уважение и надёжность"],
+      ["D", "Свобода и независимость"],
+      ["E", "Глубина и понимание"],
+      ["F", "Забота и тепло"]
+    ]
+  },
+ 
+  {
+    text: "Если перед тобой стоит сложная задача, ты обычно...",
+    answers: [
+      ["A", "Откладываю её и надеюсь, что появится настроение"],
+      ["B", "Ищу нестандартное вдохновение"],
+      ["C", "Составляю план"],
+      ["D", "Сразу начинаю действовать"],
+      ["E", "Сначала долго анализирую"],
+      ["F", "Спрашиваю совета у близких"]
+    ]
+  },
+ 
+  {
+    text: "Как ты чаще всего принимаешь решения?",
+    answers: [
+      ["A", "По настроению"],
+      ["B", "По вдохновению"],
+      ["C", "Взвешенно и уверенно"],
+      ["D", "Быстро и самостоятельно"],
+      ["E", "Интуитивно"],
+      ["F", "Учитывая интересы других"]
+    ]
+  },
+ 
+  {
+    text: "Что ты больше всего ценишь в себе?",
+    answers: [
+      ["A", "Жизнерадостность"],
+      ["B", "Чувственность и творчество"],
+      ["C", "Силу характера"],
+      ["D", "Смелость"],
+      ["E", "Интуицию"],
+      ["F", "Доброту"]
+    ]
+  },
+ 
+  {
+    text: "Когда кто-то нарушает твои границы, ты...",
+    answers: [
+      ["A", "Пытаюсь перевести всё в шутку"],
+      ["B", "Расстраиваюсь и переживаю"],
+      ["C", "Спокойно обозначаю границы"],
+      ["D", "Жёстко пресекаю"],
+      ["E", "Замыкаюсь в себе"],
+      ["F", "Пытаюсь понять человека"]
+    ]
+  },
+ 
+  {
+    text: "Что помогает тебе чувствовать себя женственной?",
+    answers: [
+      ["A", "Игра и лёгкость"],
+      ["B", "Красивые вещи и творчество"],
+      ["C", "Ощущение собственной ценности"],
+      ["D", "Физическая сила и уверенность"],
+      ["E", "Контакт со своей интуицией"],
+      ["F", "Забота и близость"]
+    ]
+  },
+ 
+  {
+    text: "Если ты чего-то очень хочешь, ты...",
+    answers: [
+      ["A", "Жду подходящего момента"],
+      ["B", "Представляю, как это будет"],
+      ["C", "Определяю, что мне нужно сделать"],
+      ["D", "Иду и добиваюсь"],
+      ["E", "Слушаю внутреннее ощущение"],
+      ["F", "Думаю, как это повлияет на близких"]
+    ]
+  },
+ 
+  {
+    text: "Как ты обычно восстанавливаешься?",
+    answers: [
+      ["A", "Развлекаюсь"],
+      ["B", "Занимаюсь творчеством"],
+      ["C", "Остаюсь наедине с собой"],
+      ["D", "Занимаюсь спортом или активностью"],
+      ["E", "Ухожу в тишину"],
+      ["F", "Общаюсь с близкими"]
+    ]
+  },
+ 
+  {
+    text: "Что тебе сложнее всего?",
+    answers: [
+      ["A", "Быть серьёзной"],
+      ["B", "Оставаться незаметной"],
+      ["C", "Просить о помощи"],
+      ["D", "Останавливать борьбу"],
+      ["E", "Объяснять свои чувства"],
+      ["F", "Ставить себя на первое место"]
+    ]
+  },
+ 
+  {
+    text: "Какой комплимент тебе приятнее всего?",
+    answers: [
+      ["A", "«С тобой легко и весело»"],
+      ["B", "«Ты невероятно вдохновляешь»"],
+      ["C", "«Ты очень уверенная женщина»"],
+      ["D", "«Ты очень сильная»"],
+      ["E", "«Ты очень тонко чувствуешь людей»"],
+      ["F", "«Рядом с тобой спокойно»"]
+    ]
+  },
+ 
+  {
+    text: "Когда тебе нужно защитить себя, ты...",
+    answers: [
+      ["A", "Стараюсь избежать конфликта"],
+      ["B", "Пытаюсь смягчить ситуацию"],
+      ["C", "Спокойно говорю о своих правах"],
+      ["D", "Вступаю в борьбу"],
+      ["E", "Сначала наблюдаю и анализирую"],
+      ["F", "Пытаюсь договориться"]
+    ]
+  },
+ 
+  {
+    text: "Что для тебя означает успех?",
+    answers: [
+      ["A", "Жить в удовольствие"],
+      ["B", "Создавать что-то прекрасное"],
+      ["C", "Иметь достойную жизнь и уважение"],
+      ["D", "Добиваться своих целей"],
+      ["E", "Жить в соответствии с собой"],
+      ["F", "Иметь счастливую семью и близких"]
+    ]
+  },
+ 
+  {
+    text: "Как ты относишься к переменам?",
+    answers: [
+      ["A", "Люблю приключения"],
+      ["B", "Вдохновляюсь новыми возможностями"],
+      ["C", "Сначала оцениваю риски"],
+      ["D", "Смело иду навстречу"],
+      ["E", "Чувствую, когда пора что-то менять"],
+      ["F", "Думаю о том, как перемены повлияют на близких"]
+    ]
+  },
+ 
+  {
+    text: "Какое состояние тебе сейчас ближе всего?",
+    answers: [
+      ["A", "Хочу больше радости"],
+      ["B", "Хочу вдохновения"],
+      ["C", "Хочу уверенности"],
+      ["D", "Хочу силы"],
+      ["E", "Хочу глубины"],
+      ["F", "Хочу тепла"]
+    ]
+  }
+ 
+];
+ 
+let currentQuestion = 0;
+ 
+let scores = {
+  A: 0,
+  B: 0,
+  C: 0,
+  D: 0,
+  E: 0,
+  F: 0
+};
+ 
+function startTest() {
+ 
+  currentQuestion = 0;
+ 
+  scores = {
+    A: 0,
+    B: 0,
+    C: 0,
+    D: 0,
+    E: 0,
+    F: 0
+  };
+ 
+  document.getElementById("startScreen").classList.add("hidden");
+  document.getElementById("resultScreen").classList.add("hidden");
+  document.getElementById("testScreen").classList.remove("hidden");
+ 
+  showQuestion();
+}
+ 
+function showQuestion() {
+ 
+  const q = questions[currentQuestion];
+ 
+  document.getElementById("progress").textContent =
+    `Вопрос ${currentQuestion + 1} из ${questions.length}`;
+ 
+  document.getElementById("question").textContent = q.text;
+ 
+  const answers = document.getElementById("answers");
+ 
+  answers.innerHTML = "";
+ 
+  q.answers.forEach(answer => {
+ 
+    const button = document.createElement("button");
+ 
+    button.className = "answer";
+ 
+    button.textContent = answer[1];
+ 
+    button.onclick = () => selectAnswer(answer[0]);
+ 
+    answers.appendChild(button);
+ 
+  });
+ 
+}
+ 
+function selectAnswer(archetype) {
+ 
+  scores[archetype]++;
+ 
+  currentQuestion++;
+ 
+  if (currentQuestion < questions.length) {
+ 
+    showQuestion();
+ 
+  } else {
+ 
+    showResult();
+ 
+  }
+ 
+}
+ 
+function showResult() {
+ 
+  document.getElementById("testScreen").classList.add("hidden");
+  document.getElementById("resultScreen").classList.remove("hidden");
+ 
+  const sorted = Object.entries(scores)
+    .sort((a, b) => b[1] - a[1]);
+ 
+  const leading = sorted[0][0];
+  const sleeping = sorted[sorted.length - 1][0];
+ 
+  const lead = archetypes[leading];
+  const sleep = archetypes[sleeping];
+ 
+  document.getElementById("resultEmoji").textContent = lead.emoji;
+ 
+  document.getElementById("resultTitle").textContent =
+    `Твой ведущий архетип — ${lead.name}`;
+ 
+  document.getElementById("resultDescription").textContent =
+    lead.description;
+ 
+  const scoresDiv = document.getElementById("scores");
+ 
+  scoresDiv.innerHTML = "";
+ 
+  sorted.forEach(([key, value], index) => {
+ 
+    const div = document.createElement("div");
+ 
+    div.className = "score";
+ 
+    if (index === 0) {
+      div.classList.add("leading");
+    }
+ 
+    div.innerHTML = `
+      <span>${archetypes[key].emoji} ${archetypes[key].name}</span>
+      <strong>${value}</strong>
+    `;
+ 
+    scoresDiv.appendChild(div);
+ 
+  });
+ 
+  document.getElementById("sleepingTitle").textContent =
+    `${sleep.emoji} ${sleep.name}`;
+ 
+  document.getElementById("sleepingDescription").textContent =
+    sleep.advice;
+}
+ 
+function restartTest() {
+ 
+  document.getElementById("resultScreen").classList.add("hidden");
+  document.getElementById("startScreen").classList.remove("hidden");
+ 
+}
+ 
+</script>
+ 
+</body>
+</html>
